@@ -32,7 +32,7 @@ BEGIN {
     ZpracovatParametry();
     OFS = "";
     for (i = 1; i <= POCET_PREPINACU; ++i) {
-        print "prep[", i, "]=<", Precist(PREPINACE, i), "><", Precist(PREPINACE, i "h"), "><", Precist(PREP_VOLBY, Precist(PREPINACE, i)), ">";
+        print "prep[", i, "]=<", Precist(PREPINACE, i), "><", Precist(PREPINACE, i "p"), "><", Precist(PREP_VOLBY, Precist(PREPINACE, i)), ">";
     }
     if (0 in ARGUMENTY) {
         print "arg[0]=<", Precist(ARGUMENTY, 0), ">";

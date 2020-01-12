@@ -41,7 +41,7 @@
 # Veřejné proměnné:
 #
 # PREPINACE[1..POCET_PREPINACU] = "název volby"
-# PREPINACE[1 "h"..POCET_PREPINACU "h"] = "parametr volby"
+# PREPINACE[1 "p"..POCET_PREPINACU "p"] = "parametr volby"
 # ARGUMENTY[1..POCET_ARGUMENTU] = "text argumentu"
 # PREP_VOLBY["název volby"] = pokud volba přijímá parametr, "jeho poslední hodnota", jinak ""
 
@@ -119,9 +119,9 @@ function ZpracovatParametry(priznaky,   i, i_parametru, j, nazev) {
                 if (i_parametru) {awkvolby_chyba("Nadbytečná hodnota k parametru: " ARGV[i])}
             } else if (i_parametru) {
                 # Hodnota je již vyplněna
-                PREP_VOLBY[nazev] = PREPINACE[POCET_PREPINACU "h"] = substr(ARGV[i], i_parametru + 1);
+                PREP_VOLBY[nazev] = PREPINACE[POCET_PREPINACU "p"] = substr(ARGV[i], i_parametru + 1);
             } else if (i + 1 != ARGC) {
-                PREP_VOLBY[nazev] = PREPINACE[POCET_PREPINACU "h"] = ARGV[++i];
+                PREP_VOLBY[nazev] = PREPINACE[POCET_PREPINACU "p"] = ARGV[++i];
             } else {
                 awkvolby_chyba("Chybí hodnota k parametru: " ARGV[i]);
             }
@@ -144,10 +144,10 @@ function ZpracovatParametry(priznaky,   i, i_parametru, j, nazev) {
                 if (awkvolby_priznaky[nazev] ~ /p/) {
                     if (j < length(ARGV[i])) {
                         # Zbývají nějaké znaky => použít je jako hodnotu.
-                        PREP_VOLBY[nazev] = PREPINACE[POCET_PREPINACU "h"] = substr(ARGV[i], j + (substr(ARGV[i], j + 1, 1) == "=" ? 2 : 1));
+                        PREP_VOLBY[nazev] = PREPINACE[POCET_PREPINACU "p"] = substr(ARGV[i], j + (substr(ARGV[i], j + 1, 1) == "=" ? 2 : 1));
                         break;
                     } else if (i + 1 != ARGC) {
-                        PREP_VOLBY[nazev] = PREPINACE[POCET_PREPINACU "h"] = ARGV[++i];
+                        PREP_VOLBY[nazev] = PREPINACE[POCET_PREPINACU "p"] = ARGV[++i];
                         break;
                     } else {
                         awkvolby_chyba("Chybí hodnota k parametru „" nazev "“: " ARGV[i]);
