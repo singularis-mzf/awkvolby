@@ -52,3 +52,16 @@ Příklad volání gawk:
 Test, zda byl zadán parametr `-a`, `--abeceda` nebo `--Abeceda`:
 
     if ("a" in PREP_VOLBY) {...}
+
+## Rozpoznávané tvary parametrů
+
+Volby ve tvaru „-“ a jeden další znak (pokud možno alfanumerický) jsou tzv. krátké volby. Krátké volby lze seskupit do jednoho parametru (např. `-abc`), pokud nepřijímají parametr, popř. pokud parametr přijímá jen poslední z nich. Pokud krátká volba přijímá parametr, lze ho zadat jedním z těchto způsobů:
+
+* -x*parametr* (jen pokud je parametr neprázdný a nezačíná znakem „=“)
+* -x=*parametr*
+* -x *parametr*
+
+Volby ve tvaru „--“ a další znaky nebo „+“ a další znaky jsou tzv. dlouhé volby. Pokud přijímají parametr, lze jim ho předat dvěma způsoby:
+
+* --volba=*parametr* (a analogicky +volba=*parametr*)
+* --volba *parametr* (a analogicky +volba *parametr*)
