@@ -23,12 +23,12 @@
 
 @include "./awkvolby.awk"
 BEGIN {
-    DeklarovatVolbu("p", "param", "p", "Testovací volba s parametrem, která se může opakovat.");
-    DeklarovatVolbu("P", "print", "", "Jiná testovací volba.");
-    DeklarovatVolbu("v", "var", "", "Testovací volba bez parametru, která se může opakovat.");
-    DeklarovatVolbu("+v", "nevar", "", "Volba +v = --nevar.");
-    DeklarovatVolbu("+nic", "n", "p", "Dlouhá +volba s -aliasem.");
-    DeklarovatAliasVolby("v", "war");
+    DeklarovatVolbu("-p", "--param", "p", "Testovací volba s parametrem, která se může opakovat.");
+    DeklarovatVolbu("-P", "--print", "", "Jiná testovací volba.");
+    DeklarovatVolbu("-v", "--var", "", "Testovací volba bez parametru, která se může opakovat.");
+    DeklarovatVolbu("+v", "--nevar", "", "Volba +v = --nevar.");
+    DeklarovatVolbu("+nic", "-n", "p", "Dlouhá +volba s -aliasem.");
+    DeklarovatAliasVolby("-v", "--war");
     ZpracovatParametry();
     OFS = "";
     for (i = 1; i <= POCET_PREPINACU; ++i) {

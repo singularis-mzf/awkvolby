@@ -13,16 +13,16 @@ Modul GNU awk pro zpracování voleb a argumentů na příkazové řádce
 
     DeklarovatVolbu(název_volby, [alias], [příznaky], [nápověda]);
 
-* Název volby: `"a"` deklaruje volbu „-a“; `"abc"` (tzn. víc než jeden znak) deklaruje volbu „--abc“; `"+x"` a `"+xyz"` deklaruje volby „+x“ a „+xyz“. Název volby je povinný a musí mít jeden z podporovaných tvarů.
+* Název volby: hlavní název volby. Musí mít jeden z podporovaných tvarů: „-x“, „--řetězec“ nebo „+řetězec“.
 * Alias je nepovinný; viz funkci `DeklarovatAliasVolby()`.
-* Příznaky jsou řetězec jednotlivých znaků s funkčním významem; v současnosti jsou podporovány tyto příznaky: **p** − volba přijímá parametr; **1** − volba se nesmí opakovat.
+* Příznaky jsou řetězec jednotlivých znaků s funkčním významem; v současnosti jsou podporovány tyto příznaky: **p** − volba přijímá (povinný) parametr; **v** − volba přijímá volitelný parametr (lze zadat pouze v rámci stejného argumentu, ne jako samostatný argument); **1** − volba se nesmí opakovat.
 * Nápověda je volitelný text popisující volbu. V této verzi je nevyužita, takže je její zadání nepovinné.
 
 .
 
     DeklarovatAliasVolby(název_volby, alias);
 
-Tato funkce vytvoří k již deklarované volbě alias čili alternativní jméno. Bude-li na příkazovém řádku volba uvedena svým aliasem, před dalším zpracováním se tento alias přeloží na základní jméno volby.
+Tato funkce vytvoří k již deklarované volbě alias čili alternativní jméno. Bude-li na příkazovém řádku volba uvedena svým aliasem, před dalším zpracováním se tento alias přeloží na základní jméno volby. Pro aliasy jsou podporovány stejné tvary jako pro názvy voleb.
 
     ZpracovatParametry([příznaky]);
 
@@ -59,9 +59,13 @@ Volby ve tvaru „-“ a jeden další znak (pokud možno alfanumerický) jsou 
 
 * -x*parametr* (jen pokud je parametr neprázdný a nezačíná znakem „=“)
 * -x=*parametr*
-* -x *parametr*
+* -x *parametr* (jen pro povinný parametr)
 
-Volby ve tvaru „--“ a další znaky nebo „+“ a další znaky jsou tzv. dlouhé volby. Pokud přijímají parametr, lze jim ho předat dvěma způsoby:
+Volby ve tvaru „--“ a další znaky nebo „+“ a další znaky jsou tzv. dlouhé volby. Pokud přijímají povinný parametr, lze jim ho předat dvěma způsoby:
 
-* --volba=*parametr* (a analogicky +volba=*parametr*)
-* --volba *parametr* (a analogicky +volba *parametr*)
+* --volba=*parametr*
+* --volba *parametr* (jen pro povinný parametr)
+
+## Náměty na zlepšení
+
+* Přijímá-li volba volitelný parametr, umožnit deklarovat jeho výchozí hodnotu.

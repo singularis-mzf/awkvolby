@@ -56,12 +56,15 @@
 #
 # Příznaky:
 #   1 − Volba se nesmí opakovat.
-#   p − Volba přijímá (vyžaduje) parametr.
+#   p − Volba vyžaduje parametr.
+#   v − Volba přijímá volitelný parametr (vylučuje se s „p“).
 #
-function DeklarovatVolbu(nazev, alias, priznaky, napoveda,   i) {
+function DeklarovatVolbu(nazev, alias, priznaky, napoveda, rezervovano,   i) {
     if (!awkvolby_jenazevvolby(nazev)) {awkvolby_chyba("Chybějící či neplatný název volby!")}
     if (alias != "" && !awkvolby_jenazevvolby(alias)) {awkvolby_chyba("Neplatný alias volby!")}
     if (nazev in awkvolby_aliasy) {awkvolby_chyba("Název " nazev " je již alias pro jinou volbu!")}
+    if (match(priznaky, /[^1pv]/)) {awkvolby_chyba("Nepodporovaný příznak '" substr(priznaky, RSTART, 1) "' v definici volby " nazev "!")}
+    if (priznaky ~ /p/ && priznaky ~ /v/) {awkvolby_chyba("Příznaky „p“ a „v“ se vylučují!")}
 
     awkvolby_priznaky[nazev] = priznaky;
     awkvolby_napoveda[nazev] = nazev "|" napoveda;
@@ -99,11 +102,7 @@ function ZpracovatParametry(priznaky,   i, i_parametru, j, nazev) {
         if (ARGV[i] ~ /^(--|\+)[^-+=|]/) {
             # Dlouhá volba (tvary „--název“, „--název=hodnota“, „--název hodnota“, „+název“, „+název=hodnota“, „+název hodnota“)
             i_parametru = index(ARGV[i], "=");
-            if (ARGV[i] ~ /^\+/) {
-                nazev = i_parametru ? substr(ARGV[i], 1, i_parametru - 1) : ARGV[i];
-            } else {
-                nazev = i_parametru ? substr(ARGV[i], 3, i_parametru - 3) : substr(ARGV[i], 3);
-            }
+            nazev = i_parametru ? substr(ARGV[i], 1, i_parametru - 1) : ARGV[i];
             if (nazev in awkvolby_aliasy) {nazev = awkvolby_aliasy[nazev]}
             if (!(nazev in awkvolby_priznaky)) {
                 # Neznámá volba
@@ -114,13 +113,16 @@ function ZpracovatParametry(priznaky,   i, i_parametru, j, nazev) {
                 awkvolby_chyba("Parametr " nazev " se nesmí opakovat.");
             }
             PREP_VOLBY[nazev] = "";
-            if (awkvolby_priznaky[nazev] !~ /p/) {
+            if (awkvolby_priznaky[nazev] !~ /[pv]/) {
                 # Nepřijímá parametr
                 if (i_parametru) {awkvolby_chyba("Nadbytečná hodnota k parametru: " ARGV[i])}
             } else if (i_parametru) {
-                # Hodnota je již vyplněna
+                # Parametr je již vyplněn
                 PREP_VOLBY[nazev] = PREPINACE[POCET_PREPINACU "p"] = substr(ARGV[i], i_parametru + 1);
-            } else if (i + 1 != ARGC) {
+            } else if (awkvolby_priznaky[nazev] ~ /v/) {
+                # Volitelný parametr nebyl zadán
+                PREP_VOLBY[nazev] = PREPINACE[POCET_PREPINACU "p"] = "";
+            } else if ( i + 1 != ARGC) {
                 PREP_VOLBY[nazev] = PREPINACE[POCET_PREPINACU "p"] = ARGV[++i];
             } else {
                 awkvolby_chyba("Chybí hodnota k parametru: " ARGV[i]);
@@ -129,7 +131,7 @@ function ZpracovatParametry(priznaky,   i, i_parametru, j, nazev) {
             # Krátká volba (tvar „-n“, „-mnop“, „-mhodnota“, „-m=hodnota“)
             j = 2;
             while (j <= length(ARGV[i])) {
-                nazev = substr(ARGV[i], j, 1);
+                nazev = "-" substr(ARGV[i], j, 1);
 
                 if (nazev in awkvolby_aliasy) {nazev = awkvolby_aliasy[nazev]}
                 if (!(nazev in awkvolby_priznaky)) {
@@ -141,10 +143,14 @@ function ZpracovatParametry(priznaky,   i, i_parametru, j, nazev) {
                     awkvolby_chyba("Parametr " nazev " se nesmí opakovat.");
                 }
                 PREP_VOLBY[nazev] = "";
-                if (awkvolby_priznaky[nazev] ~ /p/) {
+                if (awkvolby_priznaky[nazev] ~ /[pv]/) {
                     if (j < length(ARGV[i])) {
                         # Zbývají nějaké znaky => použít je jako hodnotu.
                         PREP_VOLBY[nazev] = PREPINACE[POCET_PREPINACU "p"] = substr(ARGV[i], j + (substr(ARGV[i], j + 1, 1) == "=" ? 2 : 1));
+                        break;
+                    } else if (awkvolby_priznaky[nazev] ~ /v/) {
+                        # Volitelný parametr chybí
+                        PREP_VOLBY[nazev] = PREPINACE[POCET_PREPINACU "p"] = "";
                         break;
                     } else if (i + 1 != ARGC) {
                         PREP_VOLBY[nazev] = PREPINACE[POCET_PREPINACU "p"] = ARGV[++i];
@@ -156,11 +162,8 @@ function ZpracovatParametry(priznaky,   i, i_parametru, j, nazev) {
                 ++j;
             }
         } else if (ARGV[i] !~ /^[-+]/) {
-            if (priznaky ~ /m/) {
-                ARGUMENTY[++POCET_ARGUMENTU] = ARGV[i];
-            } else {
-                break;
-            }
+            if (priznaky !~ /m/) {break}
+            ARGUMENTY[++POCET_ARGUMENTU] = ARGV[i];
         } else {
             awkvolby_chyba("Neplatný tvar volby: " ARGV[i]);
         }
@@ -180,7 +183,7 @@ function ZpracovatParametry(priznaky,   i, i_parametru, j, nazev) {
 }
 
 function awkvolby_jenazevvolby(nazev) {
-    return nazev ~ /^[+-]?[^-+=|]+$/;
+    return nazev ~ /^(\+|--)[^-+=]+$|^-[^-+=]$/;
 }
 
 function awkvolby_chyba(text) {
