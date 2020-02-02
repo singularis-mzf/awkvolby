@@ -27,7 +27,7 @@ function testawk() { command gawk -f ./test.awk -- "$@"; }
 
 # Test bez voleb:
 predel 10
-testawk >vysledek-1.txt
+testawk
 
 # Testy s jednou volbou:
 predel 20
@@ -35,9 +35,9 @@ testawk -v
 predel 30
 testawk -p1
 predel 40
-testawk -p=1
+testawk -p1
 predel 50
-testawk -p=
+testawk -p ''
 predel 60
 testawk -p 1
 predel 70
@@ -71,9 +71,9 @@ testawk -p1 -p2
 predel 240
 testawk -vp1
 predel 250
-testawk -vp=1
+testawk -vp1
 predel 260
-testawk -vp==1
+testawk -vp=1
 predel 270
 testawk -v --param -1
 predel 280
@@ -95,9 +95,9 @@ testawk -v argument
 predel 420
 testawk -p1 argument
 predel 430
-testawk -p=1 argument
+testawk -p1 argument
 predel 440
-testawk -p= argument
+testawk -p '' argument
 predel 450
 testawk -p 1 argument
 predel 460
@@ -140,3 +140,29 @@ predel 810
 testawk -p $'A\tB' -- $'\n'
 predel 820
 testawk -p "'\\'" -- '\&&$@#^**!_+@!++-\\*&'
+
+# Počítání a skupiny (-a +a -b)
+predel 900
+testawk -a
+predel 910
+testawk +a
+predel 920
+testawk -b
+predel 930
+testawk -a -a
+predel 940
+testawk -a +a
+predel 950
+testawk -a -b
+predel 960
+testawk -a -a -b
+predel 970
+testawk -a +a -b
+predel 980
+testawk -a +a +a
+predel 990
+testawk -a +a +a -a
+predel 1000
+testawk -a -b -a -b +a
+predel 1010
+testawk -a +a +a +a +a +a +a +a +a +a +a +a +a +a +a +a +a +a +a +a +a +a

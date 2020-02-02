@@ -23,12 +23,16 @@
 
 @include "./awkvolby.awk"
 BEGIN {
-    DeklarovatVolbu("-p", "--param", "p", "Testovací volba s parametrem, která se může opakovat.");
-    DeklarovatVolbu("-P", "--print", "", "Jiná testovací volba.");
-    DeklarovatVolbu("-v", "--var", "", "Testovací volba bez parametru, která se může opakovat.");
-    DeklarovatVolbu("+v", "--nevar", "", "Volba +v = --nevar.");
-    DeklarovatVolbu("+nic", "-n", "p", "Dlouhá +volba s -aliasem.");
+    # volba, alias, příznaky, skupina, nápověda
+    DeklarovatVolbu("-p", "--param", "p", "", "Testovací volba s parametrem, která se může opakovat.");
+    DeklarovatVolbu("-P", "--print", "", "", "Jiná testovací volba.");
+    DeklarovatVolbu("-v", "--var", "", "", "Testovací volba bez parametru, která se může opakovat.");
+    DeklarovatVolbu("+v", "--nevar", "", "", "Volba +v = --nevar.");
+    DeklarovatVolbu("+nic", "-n", "p", "", "Dlouhá +volba s -aliasem.");
     DeklarovatAliasVolby("-v", "--war");
+    DeklarovatVolbu("-a", "", "c", "skupina", "Volba, která se vylučuje s některými dalšími.");
+    DeklarovatVolbu("+a", "", "c", "skupina", "Volba, která se vylučuje s některými dalšími.");
+    DeklarovatVolbu("-b", "", "c", "skupina", "Volba, která se vylučuje s některými dalšími.");
     ZpracovatParametry();
     OFS = "";
     for (i = 1; i <= POCET_PREPINACU; ++i) {
@@ -39,6 +43,9 @@ BEGIN {
     }
     for (i = 1; i <= POCET_ARGUMENTU; ++i) {
         print "arg[", i, "]=<", Precist(ARGUMENTY, i), ">";
+    }
+    for (skupina in PREP_SKUPINY) {
+        print "group[", skupina, "]=<", PREP_SKUPINY[skupina], ">";
     }
     exit;
 }
