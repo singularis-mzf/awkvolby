@@ -176,7 +176,7 @@ function ZpracovatParametry(priznaky,   i, i_parametru, j, nazev) {
 }
 
 function awkvolby_jenazevvolby(nazev) {
-    return nazev ~ /^(\+|--)[^-+=]+$|^-[^-+=]$/;
+    return nazev ~ /^(\+|--)[^-+=][^=]*$|^-[^-+=]$/;
 }
 
 function awkvolby_zpracovatprepinac(nazev, ma_parametr, parametr) {
